@@ -1,0 +1,496 @@
+"use client"
+
+import { useState } from "react"
+import {
+  Filter,
+  Download,
+  Eye,
+  Edit,
+  CheckCircle,
+  XCircle,
+  Clock,
+  RefreshCw,
+  User,
+  Phone,
+  Mail,
+  CreditCard,
+  CalendarIcon,
+} from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Badge } from "@/components/ui/badge"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+
+const bookings = [
+  {
+    id: "BK001",
+    user: {
+      name: "John Doe",
+      email: "john@example.com",
+      phone: "+91 9876543210",
+    },
+    property: "Sunrise PG",
+    room: "A-101",
+    type: "Room",
+    status: "confirmed",
+    amount: 8500,
+    date: "2024-01-15",
+    checkIn: "2024-02-01",
+    checkOut: "2024-02-28",
+    source: "Vizima",
+    paymentStatus: "paid",
+    duration: "1 month",
+  },
+  {
+    id: "BK002",
+    user: {
+      name: "Sarah Wilson",
+      email: "sarah@example.com",
+      phone: "+91 9876543211",
+    },
+    property: "Green Valley Hostel",
+    room: "Visit Slot",
+    type: "Visit",
+    status: "pending",
+    amount: 0,
+    date: "2024-01-16",
+    checkIn: "2024-01-18",
+    checkOut: "2024-01-18",
+    source: "RentOk",
+    paymentStatus: "na",
+    duration: "1 day",
+  },
+  {
+    id: "BK003",
+    user: {
+      name: "Mike Johnson",
+      email: "mike@example.com",
+      phone: "+91 9876543212",
+    },
+    property: "City Center PG",
+    room: "C-301",
+    type: "Room",
+    status: "confirmed",
+    amount: 9800,
+    date: "2024-01-14",
+    checkIn: "2024-01-20",
+    checkOut: "2024-04-20",
+    source: "Vizima",
+    paymentStatus: "paid",
+    duration: "3 months",
+  },
+  {
+    id: "BK004",
+    user: {
+      name: "Emma Davis",
+      email: "emma@example.com",
+      phone: "+91 9876543213",
+    },
+    property: "Sunrise PG",
+    room: "A-102",
+    type: "Room",
+    status: "cancelled",
+    amount: 8500,
+    date: "2024-01-13",
+    checkIn: "2024-01-25",
+    checkOut: "2024-02-25",
+    source: "Vizima",
+    paymentStatus: "refunded",
+    duration: "1 month",
+  },
+]
+
+function BookingDetailsDialog({ booking }: { booking: (typeof bookings)[0] }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm">
+          <Eye className="h-4 w-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Booking Details - {booking.id}</DialogTitle>
+          <DialogDescription>Complete booking information and management options</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-6">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">User Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center space-x-2">
+                  <User className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">{booking.user.name}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">{booking.user.email}</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm">{booking.user.phone}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">Booking Details</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Property:</span>
+                  <span className="font-medium">{booking.property}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Room:</span>
+                  <span className="font-medium">{booking.room}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Type:</span>
+                  <Badge variant="outline">{booking.type}</Badge>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-muted-foreground">Source:</span>
+                  <Badge variant="secondary">{booking.source}</Badge>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Stay Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label className="text-sm text-muted-foreground">Check-in</Label>
+                  <p className="font-medium">{booking.checkIn}</p>
+                </div>
+                <div>
+                  <Label className="text-sm text-muted-foreground">Check-out</Label>
+                  <p className="font-medium">{booking.checkOut}</p>
+                </div>
+                <div>
+                  <Label className="text-sm text-muted-foreground">Duration</Label>
+                  <p className="font-medium">{booking.duration}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Payment Information</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Amount:</span>
+                <span className="font-bold text-lg">
+                  {booking.amount > 0 ? `₹${booking.amount.toLocaleString()}` : "Free Visit"}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Payment Status:</span>
+                <Badge
+                  variant={
+                    booking.paymentStatus === "paid"
+                      ? "default"
+                      : booking.paymentStatus === "refunded"
+                        ? "destructive"
+                        : "secondary"
+                  }
+                >
+                  {booking.paymentStatus}
+                </Badge>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-muted-foreground">Booking Status:</span>
+                <Badge
+                  variant={
+                    booking.status === "confirmed"
+                      ? "default"
+                      : booking.status === "pending"
+                        ? "secondary"
+                        : "destructive"
+                  }
+                >
+                  {booking.status}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="flex justify-between">
+            <div className="space-x-2">
+              <Button variant="outline">
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                Reschedule
+              </Button>
+              <Button variant="outline">
+                <CreditCard className="h-4 w-4 mr-2" />
+                Refund
+              </Button>
+            </div>
+            <div className="space-x-2">
+              <Button variant="outline" onClick={() => setOpen(false)}>
+                Close
+              </Button>
+              <Button>
+                <Edit className="h-4 w-4 mr-2" />
+                Edit Booking
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export default function BookingsPage() {
+  const [selectedTab, setSelectedTab] = useState("all")
+  const [statusFilter, setStatusFilter] = useState("all")
+
+  const filteredBookings = bookings.filter((booking) => {
+    if (selectedTab === "room" && booking.type !== "Room") return false
+    if (selectedTab === "visit" && booking.type !== "Visit") return false
+    if (statusFilter !== "all" && booking.status !== statusFilter) return false
+    return true
+  })
+
+  const stats = {
+    total: bookings.length,
+    confirmed: bookings.filter((b) => b.status === "confirmed").length,
+    pending: bookings.filter((b) => b.status === "pending").length,
+    cancelled: bookings.filter((b) => b.status === "cancelled").length,
+    revenue: bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + b.amount, 0),
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold">Booking Management</h2>
+          <p className="text-muted-foreground">Manage all property bookings and visits</p>
+        </div>
+        <div className="flex space-x-2">
+          <Button variant="outline">
+            <Download className="h-4 w-4 mr-2" />
+            Export
+          </Button>
+          <Button variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid gap-4 md:grid-cols-5">
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold">{stats.total}</div>
+            <p className="text-xs text-muted-foreground">Total Bookings</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold text-green-600">{stats.confirmed}</div>
+            <p className="text-xs text-muted-foreground">Confirmed</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold text-yellow-600">{stats.pending}</div>
+            <p className="text-xs text-muted-foreground">Pending</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold text-red-600">{stats.cancelled}</div>
+            <p className="text-xs text-muted-foreground">Cancelled</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4">
+            <div className="text-2xl font-bold text-blue-600">₹{stats.revenue.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Total Revenue</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs value={selectedTab} onValueChange={setSelectedTab}>
+        <TabsList>
+          <TabsTrigger value="all">All Bookings ({bookings.length})</TabsTrigger>
+          <TabsTrigger value="room">Room Bookings ({bookings.filter((b) => b.type === "Room").length})</TabsTrigger>
+          <TabsTrigger value="visit">Visit Bookings ({bookings.filter((b) => b.type === "Visit").length})</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value={selectedTab} className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Booking List</CardTitle>
+                <div className="flex space-x-2">
+                  <div className="relative">
+                    <Input placeholder="Search bookings..." className="w-64" />
+                  </div>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="confirmed">Confirmed</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-2" />
+                    More Filters
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Booking ID</TableHead>
+                    <TableHead>User</TableHead>
+                    <TableHead>Property</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Dates</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredBookings.map((booking) => (
+                    <TableRow key={booking.id}>
+                      <TableCell>
+                        <div className="font-medium">{booking.id}</div>
+                        <div className="text-xs text-muted-foreground">{booking.date}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center space-x-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarFallback>
+                              {booking.user.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{booking.user.name}</p>
+                            <p className="text-xs text-muted-foreground">{booking.user.email}</p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{booking.property}</p>
+                          <p className="text-xs text-muted-foreground">{booking.room}</p>
+                          <Badge variant="outline" className="text-xs mt-1">
+                            {booking.source}
+                          </Badge>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{booking.type}</Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="text-sm">
+                          <div className="flex items-center">
+                            <CalendarIcon className="h-3 w-3 mr-1" />
+                            {booking.checkIn}
+                          </div>
+                          <div className="text-xs text-muted-foreground">to {booking.checkOut}</div>
+                          <div className="text-xs text-muted-foreground">({booking.duration})</div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">
+                          {booking.amount > 0 ? `₹${booking.amount.toLocaleString()}` : "Free"}
+                        </div>
+                        <Badge
+                          variant={
+                            booking.paymentStatus === "paid"
+                              ? "default"
+                              : booking.paymentStatus === "refunded"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                          className="text-xs"
+                        >
+                          {booking.paymentStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            booking.status === "confirmed"
+                              ? "default"
+                              : booking.status === "pending"
+                                ? "secondary"
+                                : "destructive"
+                          }
+                        >
+                          {booking.status === "confirmed" && <CheckCircle className="h-3 w-3 mr-1" />}
+                          {booking.status === "pending" && <Clock className="h-3 w-3 mr-1" />}
+                          {booking.status === "cancelled" && <XCircle className="h-3 w-3 mr-1" />}
+                          {booking.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex space-x-1">
+                          <BookingDetailsDialog booking={booking} />
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          {booking.status === "pending" && (
+                            <>
+                              <Button variant="ghost" size="sm" className="text-green-600">
+                                <CheckCircle className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="sm" className="text-red-600">
+                                <XCircle className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}

@@ -1,4 +1,5 @@
 "use client"
+import { useState, useEffect } from "react"
 
 import {
   Building2,
@@ -12,11 +13,32 @@ import {
   Star,
   MapPin,
 } from "lucide-react"
+import {
+  ShieldCheck,
+  UserCheck,
+  UserX,
+  User,
+  Clock,
+} from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
+import { getDashboardService } from "@/src/services/dashboard"
+
+type DashboardData = {
+  totalProperties: number;
+  totalAgents: number;
+  adminUsers: number; // ✅ add this field
+  totalUsers: number;
+  regularUsers: number;
+  unverifiedUsers: number;
+  verifiedUsers: number;
+  recentRegistrations: number;
+
+
+};
 
 const dashboardStats = {
   totalProperties: { value: 24, change: "+2", trend: "up" },
@@ -76,13 +98,32 @@ const topProperties = [
 ]
 
 export default function DashboardPage() {
+
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+
+  console.log("dashboard", dashboardData)
+
+  useEffect(() => {
+    handleDashboard()
+  }, [])
+
+  const handleDashboard = async () => {
+    try {
+      const responce = await getDashboardService()
+      console.log("responce", responce)
+      setDashboardData(responce?.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Properties</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Properties by akib</CardTitle>
             <Building2 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -94,19 +135,208 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+        {/* <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Users</CardTitle>
             <Users className="h-4 w-4 text-green-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">{dashboardStats.totalUsers.value.toLocaleString()}</div>
+            <div className="text-2xl font-bold text-green-600">
+              {dashboardData?.totalUsers}
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card> */}
+
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+            <Users className="h-4 w-4 text-blue-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-600">{dashboardData?.totalUsers}</div>
             <p className="text-xs text-muted-foreground flex items-center">
               <TrendingUp className="h-3 w-3 mr-1" />
               {dashboardStats.totalUsers.change} this week
             </p>
           </CardContent>
         </Card>
+
+        {/* admin user */}
+        {/* <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Admin</CardTitle>
+            <Users className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {dashboardData?.adminUsers}
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card> */}
+
+        <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Admin</CardTitle>
+            <ShieldCheck className="h-4 w-4 text-purple-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-600">{dashboardData?.adminUsers}</div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card>
+
+
+        {/* verified user */}
+
+        {/* <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Verified User</CardTitle>
+            <Users className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {dashboardData?.verifiedUsers}
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card> */}
+
+
+        <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Verified User</CardTitle>
+            <UserCheck className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">{dashboardData?.verifiedUsers}</div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card>
+
+
+
+        {/* unverified user */}
+
+
+        {/* <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Unverified User</CardTitle>
+            <Users className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {dashboardData?.unverifiedUsers}
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card> */}
+
+
+        <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5 border border-red-500/20">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Unverified User</CardTitle>
+            <UserX className="h-4 w-4 text-red-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">{dashboardData?.unverifiedUsers}</div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card>
+
+
+        {/* regular user */}
+
+        {/* <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Regualar User</CardTitle>
+            <Users className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {dashboardData?.regularUsers}
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card> */}
+
+
+        <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border border-yellow-500/20">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Regular User</CardTitle>
+            <User className="h-4 w-4 text-yellow-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-600">{dashboardData?.regularUsers}</div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card>
+
+
+        {/* recent registration */}
+
+        {/* <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Recent Registration</CardTitle>
+            <Users className="h-4 w-4 text-green-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-600">
+              {dashboardData?.recentRegistrations}
+            </div>
+            <p className="text-xs text-muted-foreground flex items-center">
+              <TrendingUp className="h-3 w-3 mr-1" />
+              {dashboardStats.totalUsers.change} this week
+            </p>
+          </CardContent>
+        </Card> */}
+
+
+        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-500/20">
+  <CardHeader className="flex flex-row items-center justify-between pb-2">
+    <CardTitle className="text-sm font-medium">Recent Registration</CardTitle>
+    <Clock className="h-4 w-4 text-orange-600" />
+  </CardHeader>
+  <CardContent>
+    <div className="text-2xl font-bold text-orange-600">{dashboardData?.recentRegistrations}</div>
+    <p className="text-xs text-muted-foreground flex items-center">
+      <TrendingUp className="h-3 w-3 mr-1" />
+      {dashboardStats.totalUsers.change} this week
+    </p>
+  </CardContent>
+</Card>
+
+
+
+
 
         <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -203,7 +433,7 @@ export default function DashboardPage() {
                   {Math.round(
                     (dashboardStats.validLeads.value /
                       (dashboardStats.validLeads.value + dashboardStats.spamLeads.value)) *
-                      100,
+                    100,
                   )}
                   %
                 </span>

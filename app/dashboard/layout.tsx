@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { Suspense } from "react"
 import Image from "next/image"
@@ -179,6 +179,19 @@ export default function DashboardLayout({
   ])
 
   const currentPage = sidebarItems.find((item) => item.href === pathname)
+  const [parsedUser, setParsedUser] = useState<{
+    id: string;
+    name: string;
+    email: string;
+  } | null>(null);
+
+  console.log("parsed user", parsedUser)
+
+  useEffect(() => {
+    const getUser = localStorage.getItem("admin-info");
+    const user = getUser ? JSON.parse(getUser) : null;
+    setParsedUser(user);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -258,7 +271,7 @@ export default function DashboardLayout({
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src="/placeholder.svg?height=32&width=32" alt="Admin" />
+                        <AvatarImage src="/images/admin.jpg" alt="Admin" />
                         <AvatarFallback>AD</AvatarFallback>
                       </Avatar>
                     </Button>
@@ -266,8 +279,8 @@ export default function DashboardLayout({
                   <DropdownMenuContent className="w-56" align="end" forceMount>
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">Admin User</p>
-                        <p className="text-xs leading-none text-muted-foreground">admin@vizima.com</p>
+                        <p className="text-sm font-medium leading-none">{parsedUser?.name}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{parsedUser?.email}</p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />

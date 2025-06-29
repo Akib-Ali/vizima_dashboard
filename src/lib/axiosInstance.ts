@@ -3,7 +3,9 @@ import axios from 'axios';
 // Create axios instance with default config
 const api = axios.create({
     //   baseURL: process.env.NEXT_PUBLIC_APP_BASE_URL,
-    baseURL: "https://vizima-backend.onrender.com",
+    // baseURL: "https://vizima-backend.onrender.com",
+    baseURL: "https://api.vizima.in",
+
     headers: {
         'Accept': '*/*',
         'Content-Type': 'application/json',
@@ -32,7 +34,7 @@ api.interceptors.response.use(
             // Handle unauthorized access
             localStorage.removeItem('accessToken');
             localStorage.removeItem('accessToken');
-              window.location.href = '/';
+            window.location.href = '/';
             console.log("error", error)
         }
         return Promise.reject(error);

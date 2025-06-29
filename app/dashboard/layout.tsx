@@ -1,6 +1,9 @@
 "use client"
 
 import type React from "react"
+import ReactQueryProvider from "@/lib/reactQueryClient";
+import { Toaster } from "sonner";
+
 
 import { useState, useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
@@ -308,7 +311,21 @@ export default function DashboardLayout({
           </header>
 
           {/* Main Content Area */}
-          <main className="p-6">{children}</main>
+          {/* <main className="p-6">{children}</main> */}
+
+          <ReactQueryProvider>
+            <Toaster
+              duration={5000}
+              position="top-right"
+              richColors
+              closeButton
+              visibleToasts={5}
+              expand
+            />
+            {children}
+
+          </ReactQueryProvider>
+
         </div>
       </div>
     </div>

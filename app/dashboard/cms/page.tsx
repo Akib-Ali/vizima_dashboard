@@ -21,6 +21,10 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
+import TestimonialMain from "@/src/components/Testimonial"
+import CityMain from "@/src/components/City"
+import FaqMain from "@/src/components/Faq"
+import BannerMain from "@/src/components/Banner"
 
 const blogs = [
   {
@@ -208,10 +212,13 @@ export default function CMSPage() {
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList>
           <TabsTrigger value="blogs">Blogs ({blogs.length})</TabsTrigger>
-          <TabsTrigger value="banners">Banners ({banners.length})</TabsTrigger>
+          <TabsTrigger value="allbanners">Banners ({banners.length})</TabsTrigger>
           <TabsTrigger value="cities">Cities ({cities.length})</TabsTrigger>
           <TabsTrigger value="testimonials">Testimonials ({testimonials.length})</TabsTrigger>
+          <TabsTrigger value="faqs">Faqs  ({testimonials.length})</TabsTrigger>
+
           <TabsTrigger value="pages">Static Pages</TabsTrigger>
+
         </TabsList>
 
         <TabsContent value="blogs" className="space-y-4">
@@ -329,7 +336,7 @@ export default function CMSPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="cities" className="space-y-4">
+        {/* <TabsContent value="cities" className="space-y-4">
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -381,77 +388,18 @@ export default function CMSPage() {
               </Table>
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent>  */}
 
-        <TabsContent value="testimonials" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle>Customer Testimonials</CardTitle>
-                <Button>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add Testimonial
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Rating</TableHead>
-                    <TableHead>Comment</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {testimonials.map((testimonial) => (
-                    <TableRow key={testimonial.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{testimonial.name}</p>
-                          <p className="text-sm text-muted-foreground">{testimonial.date}</p>
-                        </div>
-                      </TableCell>
-                      <TableCell>{testimonial.property}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          {Array.from({ length: testimonial.rating }).map((_, i) => (
-                            <Star key={i} className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                          ))}
-                          <span className="ml-1 text-sm">{testimonial.rating}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <p className="text-sm truncate max-w-48">{testimonial.comment}</p>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={testimonial.status === "approved" ? "default" : "secondary"}>
-                          {testimonial.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-1">
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm" className="text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </TabsContent>
+
+        <CityMain />
+
+
+
+        <TestimonialMain />
+
+        <FaqMain/>
+
+        <BannerMain/>
 
         <TabsContent value="pages" className="space-y-4">
           <Card>

@@ -1,5 +1,4 @@
-// import api from "@/lib/axiosInstance";
-// import AppointmentsPage from "@/app/dashboard/appointments/page";
+
 import api from "../lib/axiosInstance";
 
 export const AuthServices = {

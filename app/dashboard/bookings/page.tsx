@@ -1,6 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { getBookings } from "@/src/services/BookingServices"
+import { getVisitBookings } from "@/src/services/BookingServices"
+import { useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
+
+
 import {
   Filter,
   Download,
@@ -34,6 +40,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
+import BookingTable from "@/src/components/Booking/List"
+import VisitBookingTable from "@/src/components/VisitBooking/List"
 
 const bookings = [
   {
@@ -268,6 +276,7 @@ function BookingDetailsDialog({ booking }: { booking: (typeof bookings)[0] }) {
 }
 
 export default function BookingsPage() {
+
   const [selectedTab, setSelectedTab] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
 
@@ -285,6 +294,72 @@ export default function BookingsPage() {
     cancelled: bookings.filter((b) => b.status === "cancelled").length,
     revenue: bookings.filter((b) => b.status === "confirmed").reduce((sum, b) => sum + b.amount, 0),
   }
+
+
+  // dynamic
+
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const ITEMS_PER_PAGE = 10;
+
+  const fetchBooking = useCallback(() => {
+    const payload: any = {
+      page: currentPage,
+      limit: ITEMS_PER_PAGE,
+
+    };
+    return getBookings(payload);
+  }, [
+    currentPage,
+  ]);
+
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: [currentPage],
+    queryFn: fetchBooking,
+  });
+
+
+  console.log("Booking data by akib", data)
+
+  const bookingData = data?.data || [];
+  const totalPages = data?.pagination?.totalPages;
+  const totalRecord = data?.pagination?.totalBookings;
+
+
+  console.log("booking data", bookingData, totalPages, totalRecord)
+
+
+
+  // visitbookin
+
+  // ----------- Visit Booking API -----------
+  const fetchVisitBooking = useCallback(() => {
+    const payload: any = {
+      page: currentPage,
+      limit: ITEMS_PER_PAGE,
+    };
+    return getVisitBookings(payload);
+  }, [currentPage]);
+
+  const {
+    data: dataVisitBooking,
+    isLoading: isLoadingVisit,
+    isError: isErrorVisit,
+    refetch: refetchVisit,
+  } = useQuery({
+    queryKey: ["visitBookings", currentPage],
+    queryFn: fetchVisitBooking,
+  });
+
+  const visitBookingData = dataVisitBooking?.data || [];
+  const totalPagesVisit = dataVisitBooking?.page || 1;
+  const totalVisitRecord = dataVisitBooking?.total || 0;
+
+  console.log("visit booking", visitBookingData)
+  console.log("total page", totalPagesVisit, totalVisitRecord)
+
+
 
   return (
     <div className="space-y-6">
@@ -342,11 +417,10 @@ export default function BookingsPage() {
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList>
           <TabsTrigger value="all">All Bookings ({bookings.length})</TabsTrigger>
-          <TabsTrigger value="room">Room Bookings ({bookings.filter((b) => b.type === "Room").length})</TabsTrigger>
           <TabsTrigger value="visit">Visit Bookings ({bookings.filter((b) => b.type === "Visit").length})</TabsTrigger>
         </TabsList>
 
-        <TabsContent value={selectedTab} className="space-y-4">
+        <TabsContent value="all" className="space-y-4">
           <Card>
             <CardHeader>
               <div className="flex justify-between items-center">
@@ -374,122 +448,58 @@ export default function BookingsPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Booking ID</TableHead>
-                    <TableHead>User</TableHead>
-                    <TableHead>Property</TableHead>
-                    <TableHead>Type</TableHead>
-                    <TableHead>Dates</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredBookings.map((booking) => (
-                    <TableRow key={booking.id}>
-                      <TableCell>
-                        <div className="font-medium">{booking.id}</div>
-                        <div className="text-xs text-muted-foreground">{booking.date}</div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback>
-                              {booking.user.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{booking.user.name}</p>
-                            <p className="text-xs text-muted-foreground">{booking.user.email}</p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium">{booking.property}</p>
-                          <p className="text-xs text-muted-foreground">{booking.room}</p>
-                          <Badge variant="outline" className="text-xs mt-1">
-                            {booking.source}
-                          </Badge>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{booking.type}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-sm">
-                          <div className="flex items-center">
-                            <CalendarIcon className="h-3 w-3 mr-1" />
-                            {booking.checkIn}
-                          </div>
-                          <div className="text-xs text-muted-foreground">to {booking.checkOut}</div>
-                          <div className="text-xs text-muted-foreground">({booking.duration})</div>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="font-medium">
-                          {booking.amount > 0 ? `₹${booking.amount.toLocaleString()}` : "Free"}
-                        </div>
-                        <Badge
-                          variant={
-                            booking.paymentStatus === "paid"
-                              ? "default"
-                              : booking.paymentStatus === "refunded"
-                                ? "destructive"
-                                : "secondary"
-                          }
-                          className="text-xs"
-                        >
-                          {booking.paymentStatus}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant={
-                            booking.status === "confirmed"
-                              ? "default"
-                              : booking.status === "pending"
-                                ? "secondary"
-                                : "destructive"
-                          }
-                        >
-                          {booking.status === "confirmed" && <CheckCircle className="h-3 w-3 mr-1" />}
-                          {booking.status === "pending" && <Clock className="h-3 w-3 mr-1" />}
-                          {booking.status === "cancelled" && <XCircle className="h-3 w-3 mr-1" />}
-                          {booking.status}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-1">
-                          <BookingDetailsDialog booking={booking} />
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          {booking.status === "pending" && (
-                            <>
-                              <Button variant="ghost" size="sm" className="text-green-600">
-                                <CheckCircle className="h-4 w-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm" className="text-red-600">
-                                <XCircle className="h-4 w-4" />
-                              </Button>
-                            </>
-                          )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <BookingTable data={bookingData}
+                loading={isLoading}
+                totalBookings={totalRecord} totalPages={totalPages} totalRecord={totalRecord} currentPage={currentPage} setCurrentPage={setCurrentPage} />
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="visit" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Visit Booking</CardTitle>
+                <div className="flex space-x-2">
+                  {/* <div className="relative">
+                    <Input placeholder="Search bookings..." className="w-64" />
+                  </div>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="w-32">
+                      <SelectValue placeholder="Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="confirmed">Confirmed</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-2" />
+                    More Filters
+                  </Button> */}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+             
+              <VisitBookingTable
+                data={visitBookingData}                     // ✅ Use the correct visit data
+                loading={isLoadingVisit}                   // ✅ Correct loading state
+                totalBookings={visitBookingData.length}    // ✅ Displayed in footer or summary
+                totalPages={totalPagesVisit}               // ✅ Pagination
+                totalRecord={totalVisitRecord}             // ✅ For "Showing X of Y" text
+                currentPage={currentPage}                  // ✅ Current page tracking
+                setCurrentPage={setCurrentPage}            // ✅ Page change handler
+              />
+
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+
+
       </Tabs>
     </div>
   )

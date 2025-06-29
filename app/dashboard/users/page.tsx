@@ -1,4 +1,8 @@
 "use client"
+// dynamic
+import { useCallback } from "react"
+import { useQuery } from "@tanstack/react-query"
+
 
 import { Label } from "@/components/ui/label"
 
@@ -21,6 +25,7 @@ import {
   AlertTriangle,
   User,
   Search,
+  Trash,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -39,6 +44,17 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+// 
+import { deleteUserbyId, getUsers } from "@/src/services/User"
+import { get } from "http"
+import LoadingIndicator from "@/src/common/LoadingIndicator/loading"
+import DetailModal from "@/src/components/User/DetailModal/detailModal"
+import { DeleteModal } from "@/src/common/DeleteModal/deleteModal"
+import UpdateModal from "@/src/components/User/UpdateModal/updateModal"
+import { SchemaFormData } from "@/src/components/City/Schema/schema"
+import { toast } from "sonner"
+import { updateUserById } from "@/src/services/User"
+import Pagination from "@/src/common/pagination/pagination"
 
 const users = [
   {
@@ -232,7 +248,7 @@ function UserDetailsDialog({ user }: { user: (typeof users)[0] }) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Total Spent:</span>
-                    <span className="font-medium">₹{user.totalSpent.toLocaleString()}</span>
+                    {/* <span className="font-medium">₹{user.totalSpent.toLocaleString()}</span> */}
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-muted-foreground">Last Active:</span>
@@ -392,6 +408,113 @@ export default function UsersPage() {
     totalRevenue: users.reduce((sum, u) => sum + u.totalSpent, 0),
   }
 
+
+  // dynamic
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 10;
+  const [open, setOpen] = useState(false)
+  const [testimonialId, setTestimonialId] = useState<string | null | undefined>();
+  const [detailModalopen, setDetailModalOpen] = useState(false)
+  const [updateopen, setUpdateOpen] = useState(false)
+  const [deleteModal, setDeleteModal] = useState(false)
+
+
+
+
+
+  const handleDetailModal = async (id) => {
+
+    setDetailModalOpen(true)
+    setTestimonialId(id)
+  }
+
+
+
+  const handleUpdateModalOpen = (id) => {
+    setUpdateOpen(true)
+    setTestimonialId(id)
+    console.log("testimonial id in function", id)
+  }
+
+
+  const handleUpdate = async (
+    data: SchemaFormData,
+    onSuccess: () => void
+  ) => {
+    try {
+      if (!testimonialId) {
+        toast.error("User ID is missing");
+        return;
+      }
+      const res = await updateUserById(testimonialId, data)
+      toast.success("User updated successfully.");
+      onSuccess();
+      setUpdateOpen(false);
+      refetch();
+    } catch (error: any) {
+      console.error("Error adding user:", error);
+      toast.error(error?.response?.data?.message || "Failed to update user");
+    }
+  };
+
+
+
+
+
+
+
+
+  const fetchUser = useCallback(() => {
+    const payload: any = {
+      page: currentPage,
+      limit: ITEMS_PER_PAGE,
+    };
+    return getUsers(payload);
+  }, [
+    currentPage,
+  ]);
+
+
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryKey: [currentPage],
+    queryFn: fetchUser,
+  });
+
+
+  console.log("User dynamic", data)
+
+  const userData = data?.data || [];
+  const totalPages = data?.pagination?.totalPages;
+  const totalRecord = data?.pagination?.totalUsers;
+
+  console.log("user data is", userData)
+
+
+  const handleDelete = async () => {
+    try {
+      const res = await deleteUserbyId(testimonialId);
+      toast.success("User deleted successfully");
+      refetch();
+      setDeleteModal(false);
+    } catch (error) {
+      toast.error("Something went wrong while deleting city");
+      console.error("Delete error:", error);
+    }
+  };
+
+
+  const handleDeleteModalOpen = (id) => {
+    setDeleteModal(true)
+    setTestimonialId(id)
+    console.log("testimonial id in function", id)
+  }
+
+
+
+
+
+
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -439,7 +562,7 @@ export default function UsersPage() {
         </Card>
         <Card>
           <CardContent className="p-4">
-            <div className="text-2xl font-bold text-purple-600">₹{stats.totalRevenue.toLocaleString()}</div>
+            {/* <div className="text-2xl font-bold text-purple-600">₹{stats.totalRevenue.toLocaleString()}</div> */}
             <p className="text-xs text-muted-foreground">Total Revenue</p>
           </CardContent>
         </Card>
@@ -486,102 +609,128 @@ export default function UsersPage() {
               <TableRow>
                 <TableHead>User</TableHead>
                 <TableHead>Contact</TableHead>
-                <TableHead>Location</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Tag</TableHead>
-                <TableHead>Activity</TableHead>
-                <TableHead>Documents</TableHead>
+                <TableHead>User & Admin</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback>
-                          {user.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">ID: {user.id}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="flex items-center text-sm">
-                        <Mail className="h-3 w-3 mr-1" />
-                        {user.email}
-                      </div>
-                      <div className="flex items-center text-sm">
-                        <Phone className="h-3 w-3 mr-1" />
-                        {user.phone}
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div>
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-1 text-muted-foreground" />
-                        {user.city}
-                      </div>
-                      <p className="text-sm text-muted-foreground">{user.area}</p>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        user.status === "verified" ? "default" : user.status === "blocked" ? "destructive" : "secondary"
-                      }
-                    >
-                      {user.status === "verified" && <ShieldCheck className="h-3 w-3 mr-1" />}
-                      {user.status === "blocked" && <ShieldX className="h-3 w-3 mr-1" />}
-                      {user.status === "active" && <CheckCircle className="h-3 w-3 mr-1" />}
-                      {user.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{user.tag}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <div className="text-sm">
-                      <div>{user.bookings} bookings</div>
-                      <div className="text-muted-foreground">₹{user.totalSpent.toLocaleString()}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-1">
-                      {user.documents.aadhar && <CheckCircle className="h-3 w-3 text-green-600" />}
-                      {user.documents.pan && <CheckCircle className="h-3 w-3 text-green-600" />}
-                      {user.documents.photo && <CheckCircle className="h-3 w-3 text-green-600" />}
-                      {!user.documents.aadhar && !user.documents.pan && !user.documents.photo && (
-                        <AlertTriangle className="h-3 w-3 text-yellow-600" />
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex space-x-1">
-                      <UserDetailsDialog user={user} />
-                      <Button variant="ghost" size="sm">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Shield className="h-4 w-4" />
-                      </Button>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-6">
+                    <div className="flex justify-center items-center gap-2">
+                      <LoadingIndicator />
                     </div>
                   </TableCell>
                 </TableRow>
-              ))}
+              ) : userData?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="text-center py-6 text-muted-foreground text-sm">
+                    No users found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                userData?.map((user) => (
+                  <TableRow key={user?._id}>
+                    <TableCell>
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback>
+                            {user?.name
+                              ?.split(" ")
+                              ?.map((n) => n[0])
+                              ?.join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="font-medium">{user?.name}</p>
+                          <p className="text-sm text-muted-foreground">ID: {user?._id}</p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="flex items-center text-sm">
+                          <Mail className="h-3 w-3 mr-1" />
+                          {user?.email}
+                        </div>
+                        <div className="flex items-center text-sm">
+                          <Phone className="h-3 w-3 mr-1" />
+                          {user?.phone}
+                        </div>
+                      </div>
+                    </TableCell>
+
+
+
+
+                    <TableCell>
+                      <Badge variant={user?.isVerified ? "default" : "secondary"}>
+                        {user?.isVerified ? (
+                          <>
+                            <ShieldCheck className="h-3 w-3 mr-1" />
+                            Verified
+                          </>
+                        ) : (
+                          <>
+                            <ShieldX className="h-3 w-3 mr-1" />
+                            Not Verified
+                          </>
+                        )}
+                      </Badge>
+                    </TableCell>
+
+
+                    <TableCell>
+                      <p className="font-medium">{user?.role == "user" ? "User" : "Admin"}</p>
+                    </TableCell>
+
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button variant="ghost" size="sm" title="View Details" onClick={(() => handleDetailModal(user?._id))}>
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" title="Edit" onClick={(() => handleUpdateModalOpen(user?._id))}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" title="Edit" onClick={(() => handleDeleteModalOpen(user?._id))}>
+                          <Trash className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+
+
+
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
+          {isLoading == false && totalRecord != 0 &&
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => setCurrentPage(page)}
+            />
+          }
         </CardContent>
       </Card>
+
+
+
+      <UpdateModal open={updateopen} setOpen={setUpdateOpen} onSubmit={handleUpdate} testimonialId={testimonialId} />
+
+      <DetailModal open={detailModalopen} setOpen={setDetailModalOpen} testimonialId={testimonialId} />
+
+
+
+      <DeleteModal open={deleteModal} setOpen={setDeleteModal} testimonialId={testimonialId} handleDelete={handleDelete} />
+
+
+
+
+
+
     </div>
   )
 }

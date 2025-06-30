@@ -1176,17 +1176,15 @@ import {
 } from "@/components/ui/select";
 
 
-
-
 // Define Zod validation schema
 const LoginSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  // name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
-  phone: z
-    .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number is too long"),
-  role: z.string().min(1, "Role is required"),
+  // phone: z
+  //   .string()
+  //   .min(10, "Phone number must be at least 10 digits")
+  //   .max(15, "Phone number is too long"),
+  // role: z.string().min(1, "Role is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
@@ -1280,13 +1278,13 @@ const LoginPage = () => {
               </h2>
             </div>
 
-            <FormField label="Name" error={errors.name?.message}>
+            {/* <FormField label="Name" error={errors.name?.message}>
               <Input
                 type="string"
                 placeholder="Enter Name"
                 {...register("name")}
               />
-            </FormField>
+            </FormField> */}
 
             {/* Email Field */}
             <FormField label="Email address" error={errors.email?.message}>
@@ -1297,15 +1295,15 @@ const LoginPage = () => {
               />
             </FormField>
 
-            <FormField label="Phone" error={errors.phone?.message}>
+            {/* <FormField label="Phone" error={errors.phone?.message}>
               <Input
                 type="string"
                 placeholder="Enter Mobile Number"
                 {...register("phone")}
               />
-            </FormField>
+            </FormField> */}
 
-            <FormField label="Role" error={errors.role?.message}>
+            {/* <FormField label="Role" error={errors.role?.message}>
               <Select onValueChange={(value) => setValue("role", value)} defaultValue="">
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Role" />
@@ -1316,7 +1314,7 @@ const LoginPage = () => {
                   <SelectItem value="agent">Agent</SelectItem>
                 </SelectContent>
               </Select>
-            </FormField>
+            </FormField> */}
 
             {/* Password Field */}
             <FormField label="Password" error={errors.password?.message}>

@@ -113,27 +113,27 @@ export default function SettingsPage() {
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
-        <TabsList className="grid grid-cols-5 w-full">
+        <TabsList className="grid grid-cols-2 w-full">
           <TabsTrigger value="general" className="flex items-center gap-2">
             <Globe className="h-4 w-4" />
             <span>General</span>
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
+          {/* <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
             <span>Notifications</span>
-          </TabsTrigger>
-          <TabsTrigger value="security" className="flex items-center gap-2">
+          </TabsTrigger> */}
+          {/* <TabsTrigger value="security" className="flex items-center gap-2">
             <Lock className="h-4 w-4" />
             <span>Security</span>
-          </TabsTrigger>
+          </TabsTrigger> */}
           <TabsTrigger value="payment" className="flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
             <span>Payment</span>
           </TabsTrigger>
-          <TabsTrigger value="backup" className="flex items-center gap-2">
+          {/* <TabsTrigger value="backup" className="flex items-center gap-2">
             <Database className="h-4 w-4" />
             <span>Backup</span>
-          </TabsTrigger>
+          </TabsTrigger> */}
         </TabsList>
 
         <TabsContent value="general" className="space-y-4">

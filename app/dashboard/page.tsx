@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect } from "react"
-
+import { useRouter } from 'next/navigation'
 import {
   Building2,
   Users,
@@ -8,24 +8,29 @@ import {
   TrendingDown,
   DollarSign,
   BarChart3,
-  CheckCircle,
   AlertTriangle,
   Star,
   MapPin,
-} from "lucide-react"
-import {
+  BadgeDollarSign,
+  CheckCircle,
+  XCircle,
+  CalendarCheck,
+  CalendarX2,
   ShieldCheck,
   UserCheck,
   UserX,
   User,
-  Clock,
-} from "lucide-react";
+  Clock
+} from "lucide-react"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Progress } from "@/components/ui/progress"
 import { getDashboardService } from "@/src/services/dashboard"
+import { useAuthRedirect } from "@/hooks/use-Redirect";
+import { getBookingStats } from "@/src/services/BookingServices";
+import { getPropertyStats } from "@/src/services/propertyService"
 
 type DashboardData = {
   totalProperties: number;
@@ -36,6 +41,13 @@ type DashboardData = {
   unverifiedUsers: number;
   verifiedUsers: number;
   recentRegistrations: number;
+  totalBookings: number;
+  totalRevenue: number;
+  pendingBookings: number;
+  confirmedBookings: number;
+  completedBookings: number;
+  cancelledBookings: number;
+
 
 
 };
@@ -98,10 +110,15 @@ const topProperties = [
 ]
 
 export default function DashboardPage() {
-
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [bookingData, setBookingData] = useState<DashboardData | null>(null);
+  const [propertyData, setPropertyData] = useState<DashboardData | null>(null);
 
-  console.log("dashboard", dashboardData)
+  console.log("bookingDta", bookingData)
+  console.log("propertydata", propertyData)
+
+
+  useAuthRedirect();
 
   useEffect(() => {
     handleDashboard()
@@ -110,8 +127,13 @@ export default function DashboardPage() {
   const handleDashboard = async () => {
     try {
       const responce = await getDashboardService()
+      const bookingResponce = await getBookingStats()
+      const propertyResponce = await getPropertyStats()
+      console.log("get Booking Stats", bookingResponce)
       console.log("responce", responce)
       setDashboardData(responce?.data)
+      setBookingData(bookingResponce?.data)
+      setPropertyData(propertyResponce?.data)
     } catch (error) {
       console.log(error)
     }
@@ -121,35 +143,115 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
+
+        {/* Total Bookings */}
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Properties by akib</CardTitle>
-            <Building2 className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium">Total Bookings</CardTitle>
+            <CalendarCheck className="h-4 w-4 text-blue-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{dashboardStats.totalProperties.value}</div>
-            <p className="text-xs text-muted-foreground flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              {dashboardStats.totalProperties.change} from last month
-            </p>
+            <div className="text-2xl font-bold text-blue-500">{bookingData?.totalBookings}</div>
           </CardContent>
         </Card>
 
-        {/* <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+        {/* Pending Bookings */}
+        <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-yellow-500/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-green-600" />
+            <CardTitle className="text-sm font-medium">Pending Bookings</CardTitle>
+            <Clock className="h-4 w-4 text-yellow-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {dashboardData?.totalUsers}
-            </div>
-            <p className="text-xs text-muted-foreground flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              {dashboardStats.totalUsers.change} this week
-            </p>
+            <div className="text-2xl font-bold text-yellow-500">{bookingData?.pendingBookings}</div>
           </CardContent>
-        </Card> */}
+        </Card>
+
+        {/* Confirmed Bookings */}
+        <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Confirmed Bookings</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-500">{bookingData?.confirmedBookings}</div>
+          </CardContent>
+        </Card>
+
+        {/* Completed Bookings */}
+        <Card className="bg-gradient-to-br from-indigo-500/10 to-indigo-500/5 border-indigo-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Completed Bookings</CardTitle>
+            <CalendarCheck className="h-4 w-4 text-indigo-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-indigo-500">{bookingData?.completedBookings}</div>
+          </CardContent>
+        </Card>
+
+        {/* Cancelled Bookings */}
+        <Card className="bg-gradient-to-br from-red-500/10 to-red-500/5 border-red-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Cancelled Bookings</CardTitle>
+            <XCircle className="h-4 w-4 text-red-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-500">{bookingData?.cancelledBookings}</div>
+          </CardContent>
+        </Card>
+
+        {/* Total Revenue */}
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <BadgeDollarSign className="h-4 w-4 text-emerald-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-500">₹{bookingData?.totalRevenue}</div>
+          </CardContent>
+        </Card>
+        {/* Total Properties */}
+        <Card className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Properties</CardTitle>
+            <Building2 className="h-4 w-4 text-purple-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-purple-500">{propertyData?.overview?.totalProperties}</div>
+          </CardContent>
+        </Card>
+
+        {/* Available Properties */}
+        <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Available Properties</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-500">{propertyData?.overview?.availableProperties}</div>
+          </CardContent>
+        </Card>
+
+        {/* Average Price */}
+        <Card className="bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-yellow-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average Price</CardTitle>
+            <BadgeDollarSign className="h-4 w-4 text-yellow-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-yellow-500">₹{propertyData?.overview?.averagePrice?.toFixed(0)}</div>
+          </CardContent>
+        </Card>
+
+        {/* Total Views */}
+        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Views</CardTitle>
+            <BarChart3 className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-500">{propertyData?.overview?.totalViews}</div>
+          </CardContent>
+        </Card>
 
         <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -158,10 +260,6 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{dashboardData?.totalUsers}</div>
-            <p className="text-xs text-muted-foreground flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              {dashboardStats.totalUsers.change} this week
-            </p>
           </CardContent>
         </Card>
 
@@ -189,10 +287,10 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">{dashboardData?.adminUsers}</div>
-            <p className="text-xs text-muted-foreground flex items-center">
+            {/* <p className="text-xs text-muted-foreground flex items-center">
               <TrendingUp className="h-3 w-3 mr-1" />
               {dashboardStats.totalUsers.change} this week
-            </p>
+            </p> */}
           </CardContent>
         </Card>
 
@@ -223,10 +321,10 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{dashboardData?.verifiedUsers}</div>
-            <p className="text-xs text-muted-foreground flex items-center">
+            {/* <p className="text-xs text-muted-foreground flex items-center">
               <TrendingUp className="h-3 w-3 mr-1" />
               {dashboardStats.totalUsers.change} this week
-            </p>
+            </p> */}
           </CardContent>
         </Card>
 
@@ -259,10 +357,10 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">{dashboardData?.unverifiedUsers}</div>
-            <p className="text-xs text-muted-foreground flex items-center">
+            {/* <p className="text-xs text-muted-foreground flex items-center">
               <TrendingUp className="h-3 w-3 mr-1" />
               {dashboardStats.totalUsers.change} this week
-            </p>
+            </p> */}
           </CardContent>
         </Card>
 
@@ -293,80 +391,28 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">{dashboardData?.regularUsers}</div>
-            <p className="text-xs text-muted-foreground flex items-center">
+            {/* <p className="text-xs text-muted-foreground flex items-center">
               <TrendingUp className="h-3 w-3 mr-1" />
               {dashboardStats.totalUsers.change} this week
-            </p>
+            </p> */}
           </CardContent>
         </Card>
-
 
         {/* recent registration */}
-
-        {/* <Card className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-green-500/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-500/20">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium">Recent Registration</CardTitle>
-            <Users className="h-4 w-4 text-green-600" />
+            <Clock className="h-4 w-4 text-orange-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600">
-              {dashboardData?.recentRegistrations}
-            </div>
-            <p className="text-xs text-muted-foreground flex items-center">
+            <div className="text-2xl font-bold text-orange-600">{dashboardData?.recentRegistrations}</div>
+            {/* <p className="text-xs text-muted-foreground flex items-center">
               <TrendingUp className="h-3 w-3 mr-1" />
               {dashboardStats.totalUsers.change} this week
-            </p>
-          </CardContent>
-        </Card> */}
-
-
-        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-500/20">
-  <CardHeader className="flex flex-row items-center justify-between pb-2">
-    <CardTitle className="text-sm font-medium">Recent Registration</CardTitle>
-    <Clock className="h-4 w-4 text-orange-600" />
-  </CardHeader>
-  <CardContent>
-    <div className="text-2xl font-bold text-orange-600">{dashboardData?.recentRegistrations}</div>
-    <p className="text-xs text-muted-foreground flex items-center">
-      <TrendingUp className="h-3 w-3 mr-1" />
-      {dashboardStats.totalUsers.change} this week
-    </p>
-  </CardContent>
-</Card>
-
-
-
-
-
-        <Card className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">
-              ₹{dashboardStats.monthlyRevenue.value.toLocaleString()}
-            </div>
-            <p className="text-xs text-muted-foreground flex items-center">
-              <TrendingUp className="h-3 w-3 mr-1" />
-              {dashboardStats.monthlyRevenue.change} from last month
-            </p>
+            </p> */}
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Occupancy Rate</CardTitle>
-            <BarChart3 className="h-4 w-4 text-orange-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">{dashboardStats.occupancyRate.value}%</div>
-            <p className="text-xs text-muted-foreground flex items-center">
-              <TrendingDown className="h-3 w-3 mr-1" />
-              {dashboardStats.occupancyRate.change} from last month
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Booking Stats */}
@@ -398,17 +444,17 @@ export default function DashboardPage() {
           <CardContent className="space-y-4">
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm">Vizima</span>
-                <span className="font-semibold">{dashboardStats.vizimaBookings.value}</span>
+                <span className="text-sm">Total Booking</span>
+                <span className="font-semibold">{bookingData?.pendingBookings}</span>
               </div>
-              <Progress value={dashboardStats.vizimaBookings.percentage} className="h-2" />
+              <Progress value={bookingData?.pendingBookings} className="h-2" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm">RentOk</span>
-                <span className="font-semibold">{dashboardStats.rentokBookings.value}</span>
+                <span className="text-sm">Total Property</span>
+                <span className="font-semibold">{propertyData?.overview?.totalProperties}</span>
               </div>
-              <Progress value={dashboardStats.rentokBookings.percentage} className="h-2" />
+              <Progress value={propertyData?.overview?.totalProperties} className="h-2" />
             </div>
           </CardContent>
         </Card>
@@ -444,7 +490,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      {/* <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Recent Bookings</CardTitle>
@@ -538,7 +584,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       {/* System Status */}
       <Card>

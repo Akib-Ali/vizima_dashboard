@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-// Create axios instance with default config
 const api = axios.create({
     //   baseURL: process.env.NEXT_PUBLIC_APP_BASE_URL,
     // baseURL: "https://vizima-backend.onrender.com",
     baseURL: "https://api.vizima.in",
-
     headers: {
         'Accept': '*/*',
         'Content-Type': 'application/json',

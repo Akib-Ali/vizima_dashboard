@@ -55,6 +55,7 @@ import { SchemaFormData } from "@/src/components/City/Schema/schema"
 import { toast } from "sonner"
 import { updateUserById } from "@/src/services/User"
 import Pagination from "@/src/common/pagination/pagination"
+import { useAuthRedirect } from "@/hooks/use-Redirect"
 
 const users = [
   {
@@ -393,6 +394,7 @@ function UserDetailsDialog({ user }: { user: (typeof users)[0] }) {
 export default function UsersPage() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [tagFilter, setTagFilter] = useState("all")
+  useAuthRedirect();
 
   const filteredUsers = users.filter((user) => {
     if (statusFilter !== "all" && user.status !== statusFilter) return false

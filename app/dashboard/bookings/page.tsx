@@ -42,6 +42,7 @@ import {
 import { Label } from "@/components/ui/label"
 import BookingTable from "@/src/components/Booking/List"
 import VisitBookingTable from "@/src/components/VisitBooking/List"
+import { useAuthRedirect } from "@/hooks/use-Redirect"
 
 const bookings = [
   {
@@ -279,6 +280,7 @@ export default function BookingsPage() {
 
   const [selectedTab, setSelectedTab] = useState("all")
   const [statusFilter, setStatusFilter] = useState("all")
+  useAuthRedirect();
 
   const filteredBookings = bookings.filter((booking) => {
     if (selectedTab === "room" && booking.type !== "Room") return false

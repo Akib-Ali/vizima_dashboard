@@ -25,6 +25,7 @@ import TestimonialMain from "@/src/components/Testimonial"
 import CityMain from "@/src/components/City"
 import FaqMain from "@/src/components/Faq"
 import BannerMain from "@/src/components/Banner"
+import { useAuthRedirect } from "@/hooks/use-Redirect"
 
 const blogs = [
   {
@@ -192,7 +193,7 @@ function CreateBlogDialog() {
 
 export default function CMSPage() {
   const [selectedTab, setSelectedTab] = useState("blogs")
-
+  useAuthRedirect();
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -397,9 +398,9 @@ export default function CMSPage() {
 
         <TestimonialMain />
 
-        <FaqMain/>
+        <FaqMain />
 
-        <BannerMain/>
+        <BannerMain />
 
         <TabsContent value="pages" className="space-y-4">
           <Card>

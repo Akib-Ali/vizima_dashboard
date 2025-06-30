@@ -50,3 +50,11 @@ export const updatePropertyById = async (id: string, data: any) => {
     return response.data;
 };
 
+
+export const getPropertyStats = async () => {
+    let response = await api.get(`/api/properties/stats`);
+    return response.data;
+};
+
+
+

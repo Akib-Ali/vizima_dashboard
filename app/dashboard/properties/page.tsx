@@ -12,6 +12,7 @@ import { PropertyFormData } from "@/src/components/Property/Schema/property-sche
 import { addProperty } from "@/src/services/propertyService"
 import { toast } from "sonner";
 import Pagination from "@/src/components/Property/pagination/pagination"
+import { useAuthRedirect } from "@/hooks/use-Redirect"
 
 export default function PropertiesPage() {
   const [open, setOpen] = useState(false)
@@ -37,6 +38,10 @@ export default function PropertiesPage() {
   const [priceRange, setPriceRange] = useState<[number, number]>([110, 10000]);
   const [getAllPremiumProperty, setGetAllPremiumProperty] = useState([])
   const [parsedUser, setParsedUser] = useState<{ id: string } | null>(null);
+  useAuthRedirect()
+
+
+
 
   const debouncedSearch = useDebounce(search, 500);
   const debouncedCity = useDebounce(city, 500);

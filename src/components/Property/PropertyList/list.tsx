@@ -267,8 +267,9 @@ const PropertyList: FC<PropertyListProps> = ({ properties, search, setSearch, ty
             <Tabs value={selectedTab} onValueChange={setSelectedTab}>
                 <TabsList>
                     <TabsTrigger value="vizima">
+                        Total Property
                     </TabsTrigger>
-                    <TabsTrigger value="rentok">RentOk Sync ({rentokProperties.length})</TabsTrigger>
+                    <TabsTrigger value="rentok">RentOk Sync by ({rentokProperties.length})</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="vizima" className="space-y-4">

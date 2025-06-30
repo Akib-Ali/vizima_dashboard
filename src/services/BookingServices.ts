@@ -40,6 +40,14 @@ export const getVisitBookingById = async (id: string) => {
 };
 
 
+// 
+export const getBookingStats = async () => {
+    let response = await api.get(`/api/bookings/admin/stats`)
+    return response.data;
+};
+
+
+
 
 
 

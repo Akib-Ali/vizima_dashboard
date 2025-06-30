@@ -45,6 +45,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 
+
 const sidebarItems = [
   {
     icon: Home,
@@ -56,28 +57,28 @@ const sidebarItems = [
     icon: Building2,
     label: "Properties",
     href: "/dashboard/properties",
-    count: 24,
+    // count: 24,
     description: "Manage PG/Hostel Listings",
   },
   {
     icon: Calendar,
     label: "Bookings",
     href: "/dashboard/bookings",
-    count: 12,
+    // count: 12,
     description: "Booking Management",
   },
   {
     icon: Clock,
     label: "Appointments",
     href: "/dashboard/appointments",
-    count: 8,
+    // count: 8,
     description: "Visit Slot Manager",
   },
   {
     icon: Users,
     label: "Users",
     href: "/dashboard/users",
-    count: 156,
+    // count: 156,
     description: "User Management",
   },
   {
@@ -90,14 +91,14 @@ const sidebarItems = [
     icon: Bot,
     label: "Spam Detection",
     href: "/dashboard/spam",
-    count: 5,
+    // count: 5,
     description: "AI Lead Management",
   },
   {
     icon: MessageSquare,
     label: "Support Chat",
     href: "/dashboard/support",
-    count: 3,
+    // count: 3,
     description: "Live Chat Panel",
   },
   // {
@@ -229,9 +230,20 @@ export default function DashboardLayout({
                     <Sidebar />
                   </SheetContent>
                 </Sheet>
-                <div>
+                {/* <div>
                   <h1 className="text-2xl font-bold">{currentPage?.label || "Dashboard"}</h1>
                   <p className="text-muted-foreground">{currentPage?.description || "Welcome back, Admin!"}</p>
+                </div> */}
+
+                <div>
+                  <h1 className="text-2xl font-bold">
+                    {pathname == "dashboard/property" ? "Property Detail" : currentPage?.label || "Dashboard"}
+                  </h1>
+                  <p className="text-muted-foreground">
+                    {pathname === "/dashboard/property"
+                      ? "Overview of all properties including availability and pricing."
+                      : currentPage?.description || "Welcome back, Admin!"}
+                  </p>
                 </div>
               </div>
 
@@ -287,14 +299,14 @@ export default function DashboardLayout({
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => router.push("/dashboard/profile")} className="cursor-pointer">
+                    {/* <DropdownMenuItem onClick={() => router.push("/dashboard/profile")} className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
                       Profile
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/dashboard/settings")} className="cursor-pointer">
+                    </DropdownMenuItem> */}
+                    {/* <DropdownMenuItem onClick={() => router.push("/dashboard/settings")} className="cursor-pointer">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
                     <DropdownMenuItem onClick={() => router.push("/dashboard/support")} className="cursor-pointer">
                       <HelpCircle className="mr-2 h-4 w-4" />
                       Support

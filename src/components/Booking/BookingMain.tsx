@@ -208,7 +208,7 @@ const BookingMain = () => {
                                         </TableCell>
                                         <TableCell>
                                             <div className="font-medium">
-                                                {booking.amount > 0 ? `₹${booking.amount.toLocaleString()}` : "Free"}
+                                                {booking.amount > 0 ? `₹${booking?.amount}` : "Free"}
                                             </div>
                                             <Badge
                                                 variant={

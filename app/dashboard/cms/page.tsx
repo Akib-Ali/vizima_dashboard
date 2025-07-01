@@ -212,11 +212,11 @@ export default function CMSPage() {
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab}>
         <TabsList>
-          <TabsTrigger value="blogs">Blogs ({blogs.length})</TabsTrigger>
-          <TabsTrigger value="allbanners">Banners ({banners.length})</TabsTrigger>
-          <TabsTrigger value="cities">Cities ({cities.length})</TabsTrigger>
-          <TabsTrigger value="testimonials">Testimonials ({testimonials.length})</TabsTrigger>
-          <TabsTrigger value="faqs">Faqs  ({testimonials.length})</TabsTrigger>
+          <TabsTrigger value="blogs">Blogs</TabsTrigger>
+          <TabsTrigger value="allbanners">Banners</TabsTrigger>
+          <TabsTrigger value="cities">Cities</TabsTrigger>
+          <TabsTrigger value="testimonials">Testimonials</TabsTrigger>
+          <TabsTrigger value="faqs">Faqs</TabsTrigger>
 
           <TabsTrigger value="pages">Static Pages</TabsTrigger>
 

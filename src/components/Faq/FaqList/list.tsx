@@ -117,7 +117,7 @@ const FaqList: FC<CityListProps> = ({ faqList, isLoading, handleUpdateModalOpen,
                     ) : (
                         <TableRow>
                             <TableCell colSpan={7} className="text-center py-6 text-muted-foreground">
-                                No City found.
+                                No Faq found.
                             </TableCell>
                         </TableRow>
                     )}

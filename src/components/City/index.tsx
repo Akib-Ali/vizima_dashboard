@@ -62,8 +62,8 @@ const CityMain = () => {
 
     console.log("Cities data by akib", data)
 
-    const citiesData = data || [];
-    const totalPages = data?.page;
+    const citiesData = data?.data || [];
+    const totalPages = data?.totalPages;
     const totalRecord = data?.total
 
 

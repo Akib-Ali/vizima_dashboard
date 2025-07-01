@@ -13,6 +13,11 @@ import { addProperty } from "@/src/services/propertyService"
 import { toast } from "sonner";
 import Pagination from "@/src/components/Property/pagination/pagination"
 import { useAuthRedirect } from "@/hooks/use-Redirect"
+import { Button } from "react-day-picker"
+import jsPDF from 'jspdf'
+import autoTable from 'jspdf-autotable'
+
+
 
 export default function PropertiesPage() {
   const [open, setOpen] = useState(false)
@@ -155,6 +160,81 @@ export default function PropertiesPage() {
     }
   };
 
+  // const handleExport = async () => {
+  //   try{
+  //     const paload={
+  //       page:1,
+  //       limit:totalRecord,
+  //     }
+  //     const res = await getPropertiesfullInquiries(payload)
+  //     console.log("response" , res)
+  //     console.log("export feature ")
+
+  //   }catch(error){
+
+  //   }
+
+  // }
+
+//   const handleExport = async () => {
+//   try {
+//     const payload = {
+//       page: 1,
+//       limit: totalRecord,
+//       // Optional: pass filters if backend supports
+//     };
+
+//     const res = await getPropertiesfullInquiries(payload);
+//     const records = res?.data?.properties || [];
+
+//     if (!records.length) {
+//       toast.error("No data available to export.");
+//       return;
+//     }
+
+//     // Convert JSON to CSV
+//     const csvHeaders = Object.keys(records[0]).join(",");
+//     const csvRows = records.map((record: any) =>
+//       Object.values(record).map(value => `"${String(value ?? "").replace(/"/g, '""')}"`).join(",")
+//     );
+//     const csvContent = [csvHeaders, ...csvRows].join("\n");
+
+//     // Create blob and download
+//     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+//     saveAs(blob, "properties_export.csv");
+
+//     toast.success("Data exported successfully.");
+//   } catch (error) {
+//     console.error("Export Error:", error);
+//     toast.error("Failed to export data.");
+//   }
+// };
+
+
+const handleExport = async () => {
+  try {
+    const payload = {
+      page: 1,
+      limit: totalRecord || 1000, // fallback in case totalRecord is slightly delayed
+      // Add filters here if needed
+    };
+
+    const res = await getPropertiesfullInquiries(payload);
+    const records = res?.data?.properties || [];
+
+    if (!records.length) {
+      toast.error("No data available to export.");
+      return;
+    }
+
+    // exportToCSV(records, "properties_export.csv");
+    toast.success("Data exported successfully.");
+  } catch (error) {
+    console.error("Export Error:", error);
+    toast.error("Failed to export data.");
+  }
+};
+
 
   return (
     <div className="space-y-6">
@@ -171,6 +251,8 @@ export default function PropertiesPage() {
           <AddPropertyDialog />
         </div>
       </div> */}
+
+      {/* <Button onClick={handleExport} disabled={isLoading || totalRecord === 0}>Export Data</Button> */}
 
       <Header open={open} setOpen={setOpen} onSubmit={handleAddProperty} />
 

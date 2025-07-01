@@ -17,7 +17,7 @@ export const addFaq= async (data: any) => {
 
 
 export const deleteFaqbyId = async (id: string) => {
-    const response = await api.delete(`/api/cities/${id}`,);
+    const response = await api.delete(`/api/faqs/${id}`,);
     return response.data;
 };
 
@@ -25,7 +25,7 @@ export const deleteFaqbyId = async (id: string) => {
 
 export const getFaqById = async (id: string) => {
 
-    let response = await api.get(`/api/cities/${id}`)
+    let response = await api.get(`/api/faqs/${id}`)
     return response.data;
 };
 

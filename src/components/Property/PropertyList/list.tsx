@@ -257,10 +257,6 @@ const PropertyList: FC<PropertyListProps> = ({ properties, search, setSearch, ty
     };
 
 
-
-
-
-
     return (
         <>
 
@@ -675,11 +671,11 @@ const PropertyList: FC<PropertyListProps> = ({ properties, search, setSearch, ty
                                             </TableCell>
                                         </TableRow>
                                     )}
-                                </TableBody> 
+                                </TableBody>
 
 
 
-                              
+
                             </Table>
                         </CardContent>
                     </Card>

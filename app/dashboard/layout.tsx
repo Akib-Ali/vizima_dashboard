@@ -44,6 +44,8 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
+import { AuthServices } from "@/src/services/AuthServices";
+import { toast } from "sonner";
 
 
 const sidebarItems = [
@@ -197,6 +199,20 @@ export default function DashboardLayout({
     setParsedUser(user);
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      const res = await AuthServices.logout()
+      toast.success("LogOut successfully")
+      localStorage.removeItem("accessToken")
+      localStorage.removeItem("admin-info")
+      router.push("/")
+      } catch (error) {
+        toast.error("SomeThing went wrong!")
+      }
+
+
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="flex">
@@ -312,7 +328,7 @@ export default function DashboardLayout({
                       Support
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => router.push("/login")} className="cursor-pointer">
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       Log out
                     </DropdownMenuItem>

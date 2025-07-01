@@ -1,4 +1,3 @@
-
 import api from "../lib/axiosInstance";
 
 export const AuthServices = {
@@ -50,6 +49,11 @@ export const AuthServices = {
     //  Fetch User Profile API call
     getUserProfile: async () => {
         const response = await api.get("/api/v1/auth/me");
+        return response.data;
+    },
+
+    logout: async () => {
+        const response = await api.post("/api/auth/logout");
         return response.data;
     },
 

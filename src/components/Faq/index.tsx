@@ -11,24 +11,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import DetailModal from "./DetailModal/detailModal"
 import { DeleteModal } from "@/src/common/DeleteModal/deleteModal"
 import { SchemaFormData } from "./Schema/schema"
-import { addcity } from "@/src/services/cityServices"
 
 // city data
-import { getCities } from "@/src/services/cityServices"
 import Pagination from "@/src/common/pagination/pagination"
 import { useCallback } from "react"
 import { useQuery } from "@tanstack/react-query"
-import CityList from "./CitiesList/list"
-import AddCityModal from "./AddNewCity/AddNewCity"
-import UpdateModal from "./UpdateCity/updateCity"
-import { updateCityById } from "@/src/services/cityServices"
-import { deleteCitybyId } from "@/src/services/cityServices"
 
 
 // faq data
-import { addFaq, deleteFaqbyId, getFaqs } from "@/src/services/FaqServices"
+import { addFaq, deleteFaqbyId, getFaqs, updateFaqById } from "@/src/services/FaqServices"
 import FaqList from "./FaqList/list"
 import AddFaqModal from "./AddNewFaq/AddNewFaq"
+import UpdateModal from "./Update/update"
 
 
 
@@ -49,27 +43,6 @@ const FaqMain = () => {
     const [testimonialId, setTestimonialId] = useState<string | null | undefined>();
     const ITEMS_PER_PAGE = 10
 
-    // const fetchFaq = useCallback(() => {
-    //     const payload: any = {
-    //         page: currentPage,
-    //         limit: ITEMS_PER_PAGE,
-
-    //     };
-    //     return getFaqs(payload);
-    // }, [
-    //     currentPage,
-    // ]);
-
-
-    // const { data, isLoading, isError, refetch } = useQuery({
-    //     queryKey: [currentPage],
-    //     queryFn: fetchFaq,
-    // });
-
-
-
-
-    // const [currentPage, setCurrentPage] = useState(1);
 
     const fetchFaq = () => {
         return getFaqs({ page: currentPage, limit: ITEMS_PER_PAGE });
@@ -80,14 +53,9 @@ const FaqMain = () => {
         queryFn: fetchFaq,
     });
 
-    const faqList = data || [];
-
-    const citiesData = data || [];
-    const totalPages = data?.page;
-    const totalRecord = data?.total
-
-    console.log("faq list", faqList)
-
+    const faqList = data?.data || [];
+    const totalPages = data?.pagination?.totalPages;
+    const totalRecord = data?.pagination?.totalItems
 
     const handleAdd = async (
         data: SchemaFormData,
@@ -108,13 +76,11 @@ const FaqMain = () => {
     const handleUpdateModalOpen = (id) => {
         setUpdateOpen(true)
         setTestimonialId(id)
-        console.log("testimonial id in function", id)
     }
 
     const handleDeleteModalOpen = (id) => {
         setDeleteModal(true)
         setTestimonialId(id)
-        console.log("testimonial id in function", id)
     }
 
 
@@ -124,25 +90,23 @@ const FaqMain = () => {
     ) => {
         try {
             if (!testimonialId) {
-                toast.error("City ID is missing");
+                toast.error("Faq ID is missing");
                 return;
             }
-            const res = await updateCityById(testimonialId, data)
-            toast.success("City updated successfully.");
+            const res = await updateFaqById(testimonialId, data)
+            toast.success("Faq updated successfully.");
             onSuccess();
             setUpdateOpen(false);
             refetch();
-            // console.log("Server response =>", res);
         } catch (error: any) {
             console.error("Error adding property:", error);
-            toast.error(error?.response?.data?.message || "Failed to update city");
+            toast.error(error?.response?.data?.message || "Failed to update Faq");
         }
     };
 
 
 
     const handleDetailModal = async (id) => {
-
         setDetailModalOpen(true)
         setTestimonialId(id)
     }
@@ -151,11 +115,11 @@ const FaqMain = () => {
     const handleDelete = async () => {
         try {
             const res = await deleteFaqbyId(testimonialId);
-            toast.success("City deleted successfully");
+            toast.success("Faq deleted successfully");
             refetch();
             setDeleteModal(false);
         } catch (error) {
-            toast.error("Something went wrong while deleting city");
+            toast.error("Something went wrong while deleting Faq");
             console.error("Delete error:", error);
         }
     };
